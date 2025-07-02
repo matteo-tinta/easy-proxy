@@ -1,11 +1,6 @@
-## Easy AS (Auhentication Service)
-![Easy AS Logo](logo.png)
+## Easy Proxy
 
-Easy AS (Easy Authentication Service) is a simple, standardized authentication service based on username and password.
-
-It implements a minimal OIDC flow for handling login and token issuance.
-
-Easily deployable with Docker Compose – only requires a MongoDB backend.
+Easy Proxy allows to wrap services in basic authentication check before request reaches the wrapped service
 
 ### How to run
 
@@ -28,5 +23,3 @@ Run the server
 ```bash
 pnpm start
 ```
-
-Examples of calling can be found inside /presentation/controllers/*.http
