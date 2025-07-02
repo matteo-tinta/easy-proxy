@@ -71,6 +71,7 @@ const makeRequest = async (req: Request, res: Response, next: NextFunction, opti
         const publicKey = fs.readFileSync(path.join(__dirname, '..', 'keys', 'public.key'));
 
         const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] }) as JwtPayload;
+        req.accessToken = token,
         req.jwtPayload = decoded;
 
         next();
@@ -88,14 +89,14 @@ const makeRequest = async (req: Request, res: Response, next: NextFunction, opti
 
                 console.dir({refreshed: result})
 
-                res.cookie("net-authorization", result.token, {
+                res.cookie(ENVIRONMENT.ACCESS_TOKEN_COOKIE_NAME, result.token, {
                     httpOnly: true, // Make it HttpOnly
                     secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
                     sameSite: "lax",
                     maxAge: 3600000 // 1 hour
                 })
 
-                res.cookie("net-refresh-authorization", result.refreshToken, {
+                res.cookie(ENVIRONMENT.REFRESH_TOKEN_COOKIE_NAME, result.refreshToken, {
                     httpOnly: true, // Make it HttpOnly
                     secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
                     sameSite: "lax",
@@ -126,6 +127,6 @@ const makeRequest = async (req: Request, res: Response, next: NextFunction, opti
 export default async (req: Request, res: Response, next: NextFunction) => 
     await makeRequest(req, res, next, { 
         tries: 0,
-        token: req.cookies["net-authorization"],
-        refreshToken: req.cookies["net-refresh-authorization"]
+        token: req.cookies[ENVIRONMENT.ACCESS_TOKEN_COOKIE_NAME],
+        refreshToken: req.cookies[ENVIRONMENT.REFRESH_TOKEN_COOKIE_NAME]
     });
