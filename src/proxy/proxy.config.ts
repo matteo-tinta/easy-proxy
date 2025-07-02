@@ -10,7 +10,7 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
         logger: console,
         followRedirects: true,
         pathRewrite: {
-            '^/(.*)': `${ENVIRONMENT.TARGET_BASE_PATH}/$1`,
+            '^/(.*)': `${ENVIRONMENT.TARGET_BASE_PATH}/roles/$1`,
         },
         headers: {
             "x-forwarded-host": `${ENVIRONMENT['X-FORWARDED-HOST']}`

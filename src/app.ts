@@ -12,12 +12,12 @@ const startAppAsync = async () => {
     app.get("/login", (req, res) => res.status(200).send("You need to login to perform this operation"))
 
     //AUTHORIZED ROUTES
-    
+
     //jwt decode middleware
     app.use(jwtAuthenticationMiddleware)
 
     //reverse proxy route
-    app.use("/", generateReverseProxy())
+    app.use("/roles", generateReverseProxy())
 
     return app;
 }
