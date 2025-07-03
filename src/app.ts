@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser"
 import jwtAuthenticationMiddleware from "./middlewares/jwt.middleware"
 import generateReverseProxy from "./proxy/proxy.config"
+import generateFeReverseProxy from "./proxy/fe-proxy.config"
 import { ENVIRONMENT } from "./environment";
 import path from "path";
 
@@ -99,9 +100,10 @@ const startAppAsync = async () => {
         res.redirect("/login?logout=success");
     })
 
-    app.use("/", (req, res) => {
-        return res.status(200).json(req.jwtPayload)
-    })
+    //decode JWT
+    app.get("/me", (req, res) => res.status(200).send(req.jwtPayload))
+
+    app.use("/", generateFeReverseProxy())
 
     return app;
 }
