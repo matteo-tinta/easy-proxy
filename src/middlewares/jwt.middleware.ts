@@ -70,7 +70,13 @@ const makeRequest = async (req: Request, res: Response, next: NextFunction, opti
     try {
         const publicKey = fs.readFileSync(path.join(__dirname, '..', 'keys', 'public.key'));
 
-        const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] }) as JwtPayload;
+        const decoded = jwt.verify(token, publicKey, { algorithms: ["RS256"] }) as JwtPayload & {
+            roles: Array<{
+            name: string,
+            actions: Array<string>
+            }>
+        };
+        
         req.accessToken = token,
         req.jwtPayload = decoded;
 

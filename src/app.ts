@@ -82,6 +82,7 @@ const startAppAsync = async () => {
     app.use("/roles", generateReverseProxy())
     app.get("/logout", async (req, res) => {
         const result = await fetch(`${ENVIRONMENT.AUTH_SERVER}${ENVIRONMENT.AUTH_LOGOUT_PATH}`, {
+            
             headers: {
                 "Authorization": `Bearer ${req.accessToken}`
             }
@@ -96,6 +97,10 @@ const startAppAsync = async () => {
         res.clearCookie(ENVIRONMENT.REFRESH_TOKEN_COOKIE_NAME)
         
         res.redirect("/login?logout=success");
+    })
+
+    app.use("/", (req, res) => {
+        return res.status(200).json(req.jwtPayload)
     })
 
     return app;
