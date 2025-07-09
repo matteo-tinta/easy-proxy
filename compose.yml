@@ -1,39 +1,44 @@
 services:
-  internalize:
-    ports:
-    - 3000:3000
+ internalize:
+  ports:
+   - 3000:3000
 
-  easy-as-app:
-    ports:
-      - "4000:4000"
+ easy-as-app:
+  ports:
+   - "4000:4000"
 
-  proxy-mongo:
-    ports:
-      - "27017:27017"
+ proxy-mongo:
+  ports:
+   - "27017:27017"
 
-  easy-proxy:
-    build: .
-    container_name: easy-proxy
-    ports:
-      - "4001:4000"
-    environment:
-      NODE_ENV: production
-    env_file:
-      - .env
-    depends_on:
-      - easy-as-app
-      - internalize
-      - proxy-mongo
-    develop:
-      watch:
-        - path: ./src/
-          action: rebuild
-          ignore:
-            - "**/node_modules/**"
-            - "**/*.!(ts)"  # ignore non-TypeScript files
-        - path: ./package.json
-          action: rebuild
-        - path: ./package-lock.json
-          action: rebuild
-        - path: ./.env
-          action: rebuild
+ query:
+  ports:
+   - "5000:5000"
+
+ easy-proxy:
+  build: .
+  container_name: easy-proxy
+  ports:
+   - "4001:4000"
+  environment:
+   NODE_ENV: production
+  env_file:
+   - .env
+  depends_on:
+   - easy-as-app
+   - internalize
+   - query
+   - proxy-mongo
+  develop:
+   watch:
+    - path: ./src/
+      action: rebuild
+      ignore:
+       - "**/node_modules/**"
+       - "**/*.!(ts)" # ignore non-TypeScript files
+    - path: ./package.json
+      action: rebuild
+    - path: ./package-lock.json
+      action: rebuild
+    - path: ./.env
+      action: rebuild

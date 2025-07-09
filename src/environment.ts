@@ -8,6 +8,8 @@ type ENVIRONMENT = {
     AUTH_LOGOUT_PATH: string,
     AUTH_LOGIN_PATH: string,
 
+    QUERY_SERVER: string,
+
     FE_ENDPOINT: string,
 
     ACCESS_TOKEN_COOKIE_NAME: string,
@@ -21,6 +23,7 @@ const raise = (message: string) => {
 export const ENVIRONMENT: ENVIRONMENT = {
     TARGET_SERVER: process.env["TARGET_SERVER"] ?? raise("TARGET_SERVER is mandatory"),
     TARGET_BASE_PATH: process.env["TARGET_BASE_PATH"] ?? raise("TARGET_BASE_PATH is mandatory"),
+    QUERY_SERVER: process.env["QUERY_SERVER"] ?? raise("QUERY_SERVER is mandatory"),
     AUTH_SERVER: process.env["AUTH_SERVER"] ?? raise("AUTH_SERVER is mandatory"),
     AUTH_RENEW_PATH: process.env["AUTH_RENEW_PATH"] ?? raise("AUTH_RENEW_PATH is mandatory"),
     AUTH_LOGOUT_PATH: process.env["AUTH_LOGOUT_PATH"] ?? raise("AUTH_LOGOUT_PATH is mandatory"),
@@ -31,4 +34,4 @@ export const ENVIRONMENT: ENVIRONMENT = {
     FE_ENDPOINT: process.env["FE_ENDPOINT"] ?? "http://localhost:5173",
 }
 
-console.dir({ENVIRONMENT})
+console.dir({ ENVIRONMENT })
