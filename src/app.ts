@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser"
 import jwtAuthenticationMiddleware from "./middlewares/jwt.middleware"
 import generateReverseProxy from "./proxy/proxy.config"
 import generateFeReverseProxy from "./proxy/fe-proxy.config"
+import generateAuthReverseProxy from "./proxy/auth-proxy.config"
 import { ENVIRONMENT } from "./environment";
 import path from "path";
 import { redirectToLogin, return401invalidGrant } from "./middlewares/jwt.middleware.handlers";
@@ -86,6 +87,11 @@ const startAppAsync = async () => {
     app.use("/roles", 
         jwtMiddlewareWith401Response, 
         generateReverseProxy()
+    )
+
+    app.use("/auth", 
+        jwtMiddlewareWith401Response, 
+        generateAuthReverseProxy()
     )
     
     //jwt decode middleware for FE (redirect to login)
