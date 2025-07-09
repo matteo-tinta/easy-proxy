@@ -1,8 +1,6 @@
-import { Request } from 'express';
 import { createProxyMiddleware, Options as HttpProxyMiddlewareOptions } from 'http-proxy-middleware';
-import { ClientRequest, IncomingMessage, ServerResponse } from 'http'; // Importa questi tipi per gli eventi del proxy
 
-import { ENVIRONMENT } from '../environment';
+import { ENVIRONMENT } from '../../environment';
 
 export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
     const proxyOptions: HttpProxyMiddlewareOptions = {
@@ -11,7 +9,7 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
         logger: console,
         followRedirects: true,
         pathRewrite: {
-            '^/auth/(.*)': `${ENVIRONMENT.AUTH_SERVER}/$1`,
+            '^/services/auth/(.*)': `${ENVIRONMENT.AUTH_SERVER}/$1`,
         },
         headers: {
             "x-forwarded-host": `${ENVIRONMENT['X-FORWARDED-HOST']}`
@@ -22,11 +20,11 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
                 if (req.accessToken) {
                     proxyReq.setHeader('Authorization', `Bearer ${req.accessToken}`);
                 }
-                
+
                 console.log(`[AUTH] -> ${ENVIRONMENT.AUTH_SERVER}/${proxyReq.path}`);
             },
             proxyRes: (proxyRes, req, res) => {
-                if(proxyRes.statusCode && proxyRes.statusCode >= 200) {
+                if (proxyRes.statusCode && proxyRes.statusCode >= 200) {
                     console.log(`[AUTH: ${ENVIRONMENT.AUTH_SERVER}/${req.url}]: ${proxyRes.statusCode}`)
                 }
             },

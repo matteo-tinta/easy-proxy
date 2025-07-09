@@ -1,7 +1,6 @@
 import { createProxyMiddleware, Options as HttpProxyMiddlewareOptions } from 'http-proxy-middleware';
-import { ClientRequest, IncomingMessage, ServerResponse } from 'http'; // Importa questi tipi per gli eventi del proxy
 
-import { ENVIRONMENT } from '../environment';
+import { ENVIRONMENT } from '../../environment';
 
 export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
     const proxyOptions: HttpProxyMiddlewareOptions = {
@@ -10,7 +9,7 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
         logger: console,
         followRedirects: true,
         pathRewrite: {
-            '^/roles/(.*)': `${ENVIRONMENT.TARGET_BASE_PATH}/$1`,
+            '^/services/roles/(.*)': `${ENVIRONMENT.TARGET_BASE_PATH}/$1`,
         },
         headers: {
             "x-forwarded-host": `${ENVIRONMENT['X-FORWARDED-HOST']}`
@@ -21,11 +20,11 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
                 // if (req.jwtPayload && req.jwtPayload.userId) {
                 //     proxyReq.setHeader('X-User-ID', req.jwtPayload.userId as string); // Cast a string se userId può non esserlo
                 // }
-                
+
                 console.log(`Going to: ${ENVIRONMENT.TARGET_BASE_PATH}/${proxyReq.path}`);
             },
             proxyRes: (proxyRes, req, res) => {
-                if(proxyRes.statusCode && proxyRes.statusCode >= 200) {
+                if (proxyRes.statusCode && proxyRes.statusCode >= 200) {
                     console.log(`[${ENVIRONMENT.TARGET_BASE_PATH}/${req.url}]: ${proxyRes.statusCode}`)
                 }
             },

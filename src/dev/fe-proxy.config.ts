@@ -1,10 +1,9 @@
 import { createProxyMiddleware, Options as HttpProxyMiddlewareOptions } from 'http-proxy-middleware';
-import { ClientRequest, IncomingMessage, ServerResponse } from 'http'; // Importa questi tipi per gli eventi del proxy
 
 import { ENVIRONMENT } from '../environment';
 
 export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
-    
+
 
     const proxyOptions: HttpProxyMiddlewareOptions = {
         target: ENVIRONMENT.FE_ENDPOINT,
