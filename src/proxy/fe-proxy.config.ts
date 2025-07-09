@@ -4,10 +4,13 @@ import { ClientRequest, IncomingMessage, ServerResponse } from 'http'; // Import
 import { ENVIRONMENT } from '../environment';
 
 export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
+    
+
     const proxyOptions: HttpProxyMiddlewareOptions = {
         target: ENVIRONMENT.FE_ENDPOINT,
         changeOrigin: true,
         logger: console,
+        ws: true,
         followRedirects: true,
         pathRewrite: {
             '^/(.*)': `/$1`,

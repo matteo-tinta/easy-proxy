@@ -6,7 +6,7 @@
   "scripts": {
     "build": "swc src --out-dir dist",
     "start": "node dist/index.js",
-    "dev": "docker compose up -w",
+    "dev": "docker compose -f compose.yml -f arch/services/auth/compose.yml -f arch/services/internalize/compose.yml -f arch/services/persistence/compose.yml up -w",
     "test": "vitest"
   },
   "keywords": [],

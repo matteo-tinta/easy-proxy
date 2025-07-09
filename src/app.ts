@@ -5,6 +5,15 @@ import generateReverseProxy from "./proxy/proxy.config"
 import generateFeReverseProxy from "./proxy/fe-proxy.config"
 import { ENVIRONMENT } from "./environment";
 import path from "path";
+import { redirectToLogin, return401invalidGrant } from "./middlewares/jwt.middleware.handlers";
+
+const jwtMiddlewareForFrontend = jwtAuthenticationMiddleware({
+    onError: redirectToLogin
+})
+
+const jwtMiddlewareWith401Response = jwtAuthenticationMiddleware({
+    onError: return401invalidGrant
+})
 
 const startAppAsync = async () => {
     const app = express();
@@ -16,7 +25,6 @@ const startAppAsync = async () => {
     )
 
     app.get("/login", (req, res) => {
-        const { logout = "" } = req.query
         return res.status(200).sendFile(path.join(__dirname, "pages", 'login.html'));
     })
     app.post("/login", async (req, res) => {
@@ -75,13 +83,14 @@ const startAppAsync = async () => {
     })
 
     //AUTHORIZED ROUTES
-
-    //jwt decode middleware
-    app.use(jwtAuthenticationMiddleware)
-
-    //reverse proxy route
-    app.use("/roles", generateReverseProxy())
-    app.get("/logout", async (req, res) => {
+    app.use("/roles", 
+        jwtMiddlewareWith401Response, 
+        generateReverseProxy()
+    )
+    
+    //jwt decode middleware for FE (redirect to login)
+    app.use(jwtMiddlewareForFrontend)
+    app.get("/logout",  async (req, res) => {
         const result = await fetch(`${ENVIRONMENT.AUTH_SERVER}${ENVIRONMENT.AUTH_LOGOUT_PATH}`, {
             
             headers: {
@@ -102,7 +111,6 @@ const startAppAsync = async () => {
 
     //decode JWT
     app.get("/me", (req, res) => res.status(200).send(req.jwtPayload))
-
     app.use("/", generateFeReverseProxy())
 
     return app;

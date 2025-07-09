@@ -1,0 +1,4 @@
+[submodule "arch"]
+	path = arch
+	url = git@github.com:matteo-tinta/easy.iam.arch.git
+	branch = main

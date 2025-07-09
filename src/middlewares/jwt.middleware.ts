@@ -2,18 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload, TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import fs from "fs";
 import path from 'path';
-import { measureMemory } from 'vm';
 import { ENVIRONMENT } from '../environment';
+import { redirectToLogin } from './jwt.middleware.handlers';
+import { JwtAuthenticationTokenResponse } from './jwt.middleware.types';
 
-
-type TokenResponse = {
-    token: string,
-    refreshToken: string
-}
-
-const redirectToLogin = (res: Response) => res.redirect("/login")
-
-const renewToken = async (refreshToken: string): Promise<TokenResponse> => {
+const renewToken = async (refreshToken: string): Promise<JwtAuthenticationTokenResponse> => {
     const data = {
         refresh_token: refreshToken,
         grant_type: 'refresh'
@@ -48,12 +41,14 @@ const renewToken = async (refreshToken: string): Promise<TokenResponse> => {
 
 const makeRequest = async (req: Request, res: Response, next: NextFunction, options: {
     tries: number,
+    onError?: (res: Response) => void,
     token: string | null,
     refreshToken: string | null
 }) => {
 
     const {
-        tries, token, refreshToken
+        tries, token, refreshToken,
+        onError = redirectToLogin
     } = options
 
     if(tries > 1) {
@@ -64,7 +59,7 @@ const makeRequest = async (req: Request, res: Response, next: NextFunction, opti
         //return 401
         //todo: redirect to login
         console.log("Token was not found, redirect to login")
-        return redirectToLogin(res)
+        return onError(res)
     }
 
     try {
@@ -116,22 +111,25 @@ const makeRequest = async (req: Request, res: Response, next: NextFunction, opti
                 }); //avoid looping, cookies must be set
 
             } catch (error) {
-                return redirectToLogin(res);
+                return onError(res);
             }
         }
         
         if (error instanceof JsonWebTokenError) {
-            
-            return redirectToLogin(res)
+            return onError(res)
         }
 
         console.error('Errore nella verifica JWT:', error);
-        return res.status(500).json({ message: 'Internal proxy jwt decode error (this should not happens)' });
+        return res.status(500).json({ message: 'Internal proxy jwt decode error (this should not happen)' });
     }
 };
 
-export default async (req: Request, res: Response, next: NextFunction) => 
+// factory building for different on error handling
+export default (options?: {
+    onError: (res: Response) => void
+}) => async (req: Request, res: Response, next: NextFunction) => 
     await makeRequest(req, res, next, { 
+        onError: options?.onError,
         tries: 0,
         token: req.cookies[ENVIRONMENT.ACCESS_TOKEN_COOKIE_NAME],
         refreshToken: req.cookies[ENVIRONMENT.REFRESH_TOKEN_COOKIE_NAME]

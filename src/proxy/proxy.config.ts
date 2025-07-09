@@ -10,7 +10,7 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
         logger: console,
         followRedirects: true,
         pathRewrite: {
-            '^/(.*)': `${ENVIRONMENT.TARGET_BASE_PATH}/roles/$1`,
+            '^/roles/(.*)': `${ENVIRONMENT.TARGET_BASE_PATH}/$1`,
         },
         headers: {
             "x-forwarded-host": `${ENVIRONMENT['X-FORWARDED-HOST']}`
@@ -21,11 +21,13 @@ export default (options?: Partial<HttpProxyMiddlewareOptions>) => {
                 // if (req.jwtPayload && req.jwtPayload.userId) {
                 //     proxyReq.setHeader('X-User-ID', req.jwtPayload.userId as string); // Cast a string se userId può non esserlo
                 // }
-
-                console.log(`Going to: ${proxyReq.path}`);
+                
+                console.log(`Going to: ${ENVIRONMENT.TARGET_BASE_PATH}/${proxyReq.path}`);
             },
             proxyRes: (proxyRes, req, res) => {
-                console.log(`Response was: ${proxyRes.statusCode}`);
+                if(proxyRes.statusCode && proxyRes.statusCode >= 200) {
+                    console.log(`[${ENVIRONMENT.TARGET_BASE_PATH}/${req.url}]: ${proxyRes.statusCode}`)
+                }
             },
             error: (err, req, res, target) => {
                 console.error('Errore nel proxy:', err, 'per target:', target);

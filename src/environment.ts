@@ -30,3 +30,5 @@ export const ENVIRONMENT: ENVIRONMENT = {
     REFRESH_TOKEN_COOKIE_NAME: process.env["REFRESH_TOKEN_COOKIE_NAME"] ?? "net-refresh-authorization",
     FE_ENDPOINT: process.env["FE_ENDPOINT"] ?? "http://localhost:5173",
 }
+
+console.dir({ENVIRONMENT})
